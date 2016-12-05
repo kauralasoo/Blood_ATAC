@@ -2,7 +2,7 @@ library("tidyr")
 library("dplyr")
 
 #Import metadata
-metadata = read.table("Blood_ATAC/data/sample_metadata.GEO.txt", sep = "\t", header = TRUE, stringsAsFactors = TRUE)
+metadata = read.table("Blood_ATAC/data/sample_metadata.GEO.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
 
 #Parse columns
 new_metadata = tidyr::separate(metadata, donor, c("d1","donor"), sep = "donorid: ") %>% 
