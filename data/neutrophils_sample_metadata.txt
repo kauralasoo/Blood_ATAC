@@ -1,11 +1,11 @@
-sample_id	GEO_sample_id	GEO_accession	cell_type	cell_description	donor	SRA_accession
-Neut_ctrl_1	Neutrophil_control_donor1	GSM1972153	Neut	Neutrophil	donor1	SRX1482107
-Neut_ctrl_2	Neutrophil_control_donor2	GSM1972154	Neut	Neutrophil	donor2	SRX1482108
-Neut_PMA1h_1	Neutrophil_donor1_PMA_1h	GSM1972155	Neut	Neutrophil + PMA 1h	donor1	SRX1482109
-Neut_PMA1h_2	Neutrophil_donor2_PMA_1h	GSM1972156	Neut	Neutrophil + PMA 1h	donor2	SRX1482110
-Neut_PMA3h_1	Neutrophil_donor1_PMA_3h	GSM1972157	Neut	Neutrophil + PMA 3h	donor1	SRX1482111
-Neut_PMA3h_2	Neutrophil_donor2_PMA_3h	GSM1972158	Neut	Neutrophil + PMA 3h	donor2	SRX1482112
-Neut_PMA5h_1	Neutrophil_donor1_PMA_5h	GSM1972159	Neut	Neutrophil + PMA 5h	donor1	SRX1482113
-Neut_PMA5h_2	Neutrophil_donor2_PMA_5h	GSM1972160	Neut	Neutrophil + PMA 5h	donor2	SRX1482114
-Neut_PMA+PAD4i_1	Neutrophil_treated_PMA_and_PAD4i_5h.rep1	GSM1972161	Neut	Neutrophil + PMA+PAD4i 5h	donor1	SRX1482115
-Neut_PMA+PAD4i_2	Neutrophil_treated_PMA_and_PAD4i_5h.rep2	GSM1972162	Neut	Neutrophil + PMA+PAD4i 5h	donor2	SRX1482116
+sample_id	GEO_sample_id	GEO_accession	cell_type	cell_description	donor	SRA_accession	run_id
+Neut_ctrl_1	Neutrophil_control_donor1	GSM1972153	Neut	Neutrophil	donor1	SRX1482107	SRR2999324
+Neut_ctrl_2	Neutrophil_control_donor2	GSM1972154	Neut	Neutrophil	donor2	SRX1482108	SRR2999325
+Neut_PMA1h_1	Neutrophil_donor1_PMA_1h	GSM1972155	Neut	Neutrophil + PMA 1h	donor1	SRX1482109	SRR2999326
+Neut_PMA1h_2	Neutrophil_donor2_PMA_1h	GSM1972156	Neut	Neutrophil + PMA 1h	donor2	SRX1482110	SRR2999327
+Neut_PMA3h_1	Neutrophil_donor1_PMA_3h	GSM1972157	Neut	Neutrophil + PMA 3h	donor1	SRX1482111	SRR2999328
+Neut_PMA3h_2	Neutrophil_donor2_PMA_3h	GSM1972158	Neut	Neutrophil + PMA 3h	donor2	SRX1482112	SRR2999329
+Neut_PMA5h_1	Neutrophil_donor1_PMA_5h	GSM1972159	Neut	Neutrophil + PMA 5h	donor1	SRX1482113	SRR2999330
+Neut_PMA5h_2	Neutrophil_donor2_PMA_5h	GSM1972160	Neut	Neutrophil + PMA 5h	donor2	SRX1482114	SRR2999331
+Neut_PMA+PAD4i_1	Neutrophil_treated_PMA_and_PAD4i_5h.rep1	GSM1972161	Neut	Neutrophil + PMA+PAD4i 5h	donor1	SRX1482115	SRR2999332
+Neut_PMA+PAD4i_2	Neutrophil_treated_PMA_and_PAD4i_5h.rep2	GSM1972162	Neut	Neutrophil + PMA+PAD4i 5h	donor2	SRX1482116	SRR2999333
