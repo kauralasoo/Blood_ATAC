@@ -11,7 +11,7 @@ rule SRA_to_fastq:
 		mem = 1000
 	threads: 1
 	shell:
-		"fastq-dump --split-files --gzip --skip-technical --readids --dumpbase --clip --outdir processed/fastq/ {input}"
+		"fastq-dump --split-files --gzip --skip-technical --dumpbase --clip --outdir processed/fastq/ {input}"
 
 #Rename the fastq files to specify pairing correctly
 rule rename_fastq:
@@ -74,6 +74,21 @@ rule rename_trimmed_fastq:
 	shell:
 		"mv {input.f1} {output.f1} && mv {input.f2} {output.f2}" 
 
+#Align reads to the reference genome using BWA
+rule align_reads:
+	input:
+		"processed/trimmed/{sample}.1.trimmed.fastq.gz",
+		"processed/trimmed/{sample}.2.trimmed.fastq.gz"
+	output:
+		"processed/aligned/{sample}.bam"
+	params:
+		genome = "../../../annotations/GRCh38/bwa_index/GRCh38",
+		rg="@RG\tID:{sample}\tSM:{sample}"
+	resources:
+		mem = 12000
+	threads: 4
+	shell:
+		"bwa mem -M -R '{params.rg}' -t {threads} {params.genome} {input} | samtools view -b - > {output}"
 
 
 

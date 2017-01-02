@@ -15,10 +15,9 @@ job_name = job_properties["rule"]
 
 #Extract memory and construct memory string
 mem = str(job_properties.get('resources',{}).get('mem'))
-memory_string = ' -R"span[hosts=1] select[mem>' + mem +'] rusage[mem=' + mem +']" -M '+mem
+memory_string = ' -R"span[hosts=1] select[mem>' + mem +' && hname!=' + "'bc-29-1-08'" +'] rusage[mem=' + mem +']" -M '+mem
 
 #Construct output file
-output_dir = job_properties["cluster"]["outdir"]
 output_file = os.path.join("FarmOut", job_name + '.%J.txt')
 
 #Construct a submission script
