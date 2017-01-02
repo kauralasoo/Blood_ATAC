@@ -131,7 +131,7 @@ rule filter_properly_paired:
 	shell:
 		"samtools view -h -b -f 2 {input} {params.chr_list} > {output}"
 
-#Remove BWA entry from the BAM header file (conflicts with MarkDuplicates)
+#Remove BWA entry from the BAM file header (conflicts with MarkDuplicates)
 rule remove_bwa_header:
 	input:
 		"processed/filtered/{sample}.filtered.bam"
@@ -145,6 +145,18 @@ rule remove_bwa_header:
 		"samtools view -H {input} | grep -v 'ID:bwa' > {output.new_header} &&"
 		"samtools reheader {output.new_header} {input} > {output.bam}"
 
+#Remove duplicates using Picard MarkDuplicates
+rule remove_duplicates:
+	input:
+		"processed/filtered/{sample}.reheadered.bam"
+	output:
+		bam = "processed/filtered/{sample}.no_duplicates.bam"
+		metrics = "processed/filtered/{sample}.MarkDuplicates.txt"
+	resources:
+		mem = 2200
+	threads: 4
+	shell:
+		"config[picard_path] MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
 
 
 
