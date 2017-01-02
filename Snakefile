@@ -156,7 +156,7 @@ rule remove_duplicates:
 		mem = 2200
 	threads: 4
 	shell:
-		"config[picard_path] MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
+		"{config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
 
 
 
