@@ -1,5 +1,7 @@
 SAMPLES = ["HSC_4983_1"]
 
+configfile: "config.yaml"
+
 #Convert SRA files to fastq
 rule SRA_to_fastq:
 	input:
@@ -82,7 +84,7 @@ rule align_reads:
 	output:
 		"processed/aligned/{sample}.bam"
 	params:
-		genome = "../../../annotations/GRCh38/bwa_index/GRCh38",
+		genome = config["bwa_index"],
 		rg="@RG\tID:{sample}\tSM:{sample}"
 	resources:
 		mem = 12000
