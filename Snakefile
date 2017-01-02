@@ -150,7 +150,7 @@ rule remove_duplicates:
 	input:
 		"processed/filtered/{sample}.reheadered.bam"
 	output:
-		bam = "processed/filtered/{sample}.no_duplicates.bam"
+		bam = "processed/filtered/{sample}.no_duplicates.bam",
 		metrics = "processed/filtered/{sample}.MarkDuplicates.txt"
 	resources:
 		mem = 2200
