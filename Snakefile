@@ -102,5 +102,15 @@ rule sort_bams_by_position:
 	shell:
 		"samtools sort -T processed/aligned/{wildcards.sample} -O bam -@ {threads} {input} > {output}"
 
-
+#Index sorted bams
+rule index_bams:
+	input:
+		"processed/aligned/{sample}.sorted.bam"
+	output:
+		"processed/aligned/{sample}.sorted.bam.bai"
+	resources:
+		mem = 50
+	threads: 1
+	shell:
+		"samtools index {input}"
 
