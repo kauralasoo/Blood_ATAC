@@ -131,4 +131,20 @@ rule filter_properly_paired:
 	shell:
 		"samtools view -h -b -f 2 {input} {params.chr_list} > {output}"
 
+#Remove BWA entry from the BAM header file (conflicts with MarkDuplicates)
+rule remove_bwa_header:
+	input:
+		"processed/filtered/{sample}.filtered.bam"
+	output:
+		new_header = "processed/filtered/{sample}.new_header.txt",
+		bam = "processed/filtered/{sample}.reheadered.bam"
+	resources:
+		mem = 100
+	threads: 1
+	shell:
+		"samtools view -H {input} | grep -v 'ID:bwa' > {output.new_header} &&"
+		"samtools reheader {output.new_header} {input} > {output.bam}"
+
+
+
 
