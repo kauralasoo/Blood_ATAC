@@ -90,5 +90,17 @@ rule align_reads:
 	shell:
 		"bwa mem -M -R '{params.rg}' -t {threads} {params.genome} {input} | samtools view -b - > {output}"
 
+#Sort BAM files by coordinates
+rule sort_bams_by_position:
+	input:
+		"processed/aligned/{sample}.bam"
+	output:
+		"processed/aligned/{sample}.sorted.bam"
+	resources:
+		mem = 4000
+	threads: 4
+	shell:
+		"samtools sort -T processed/aligned/{wildcards.sample} -O bam -@ {threads} {input} > {output}"
+
 
 
