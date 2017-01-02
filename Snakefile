@@ -114,3 +114,19 @@ rule index_bams:
 	shell:
 		"samtools index {input}"
 
+#Keep only properly paired reads from nuclear chromosomes (remove MT)
+rule filter_properly_paired:
+	input:
+		bam = "processed/aligned/{sample}.sorted.bam",
+		index = "processed/aligned/{sample}.sorted.bam.bai"
+	output:
+		"processed/filtered/{sample}.filtered.bam"
+	resources:
+		mem = 100
+	threads: 1
+	params:
+		chr_list = "1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9 X Y"
+	shell:
+		"samtools view -h -b -f 2 {input} {params.chr_list} > {output}"
+
+
