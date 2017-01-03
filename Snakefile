@@ -158,7 +158,7 @@ rule remove_duplicates:
 	shell:
 		"{config[picard_path]}r MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
 
-#Count the number of reads per chromosome
+#Count the number of reads per chromosome (QC metric)
 rule reads_per_chromosome:
 	input:
 		"processed/aligned/{sample}.sorted.bam"
@@ -169,6 +169,62 @@ rule reads_per_chromosome:
 	threads: 1
 	shell:
 		"samtools view {input} | cut -f3 | sort | uniq -c > {output}"
+
+
+#Sort BAM files by coordinates
+rule sort_bams_by_name:
+	input:
+		"processed/filtered/{sample}.no_duplicates.bam"
+	output:
+		"processed/filtered/{sample}.sortedByName.bam"
+	resources:
+		mem = 4000
+	threads: 4
+	shell:
+		"samtools sort -T processed/filtered/{wildcards.sample} -O bam -@ {threads} -n {input} > {output}"
+
+#Convert the bam file to a bed file of fragments
+#First to bedpe and then to bed
+rule bam_to_fragment_bed:
+	input:
+		"processed/filtered/{sample}.sortedByName.bam"
+	output:
+		"processed/filtered/{sample}.fragments.bed.gz"
+	resources:
+		mem = 1000
+	threads: 2
+	shell:
+		"bedtools bamtobed -bedpe -i {input} | python {config[bedpe2bed]} --maxFragmentLength 1000 | sort -k 1,1 | gzip > {output}"
+
+#Count the number of occurences of each fragment length in the fragments bed file
+rule count_fragment_lengths:
+	input:
+		"processed/filtered/{sample}.fragments.bed.gz"
+	output:
+		"processed/metrics/{sample}.fragment_lengths.txt"
+	resources:
+		mem = 100
+	threads: 1
+	shell:
+		"zcat {input} | cut -f5 | sort -n | uniq -c > {output}"
+
+#Convert fragment bed file into bigwig
+rule convert_bed_to_bigwig:
+	input:
+		"processed/filtered/{sample}.fragments.bed.gz"
+	output:
+		bedgraph = "processed/bigwig/{sample}.bg.gz",
+		bigwig = "processed/bigwig/{sample}.bw"
+	params:
+		bedgraph = "processed/bigwig/{sample}.bg"
+	resources:
+		mem = 3000
+	threads: 1
+	shell:
+		"bedtools genomecov -bga -i {input} -g {config[chromosome_lengths]} > {params.bedgraph} && "
+		"bedGraphToBigWig {params.bedgraph} {config[chromosome_lengths]} {output.bigwig} && "
+		"gzip {params.bedgraph}"
+
 
 
 
