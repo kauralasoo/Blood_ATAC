@@ -163,7 +163,7 @@ rule reads_per_chromosome:
 	input:
 		"processed/aligned/{sample}.sorted.bam"
 	output:
-		"processed/metrics/{sample].chr_counts.txt"
+		"processed/metrics/{sample}.chr_counts.txt"
 	resources:
 		mem = 100
 	threads: 1
