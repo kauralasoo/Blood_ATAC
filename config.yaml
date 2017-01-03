@@ -1,2 +1,3 @@
 bwa_index: ../../../annotations/GRCh38/bwa_index/GRCh38
 picard_path: '/software/java/bin/java -jar -Xmx1800m /nfs/users/nfs_k/ka8/software/picard-tools-1.134/picard.jar'
+bedpe2bed: '~/software/utils/coverage/bedpe2bed.py'
