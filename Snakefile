@@ -151,12 +151,25 @@ rule remove_duplicates:
 		"processed/filtered/{sample}.reheadered.bam"
 	output:
 		bam = "processed/filtered/{sample}.no_duplicates.bam",
-		metrics = "processed/filtered/{sample}.MarkDuplicates.txt"
+		metrics = "processed/metrics/{sample}.MarkDuplicates.txt"
 	resources:
 		mem = 2200
 	threads: 4
 	shell:
-		"{config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
+		"{config[picard_path]}r MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
+
+#Count the number of reads per chromosome
+rule reads_per_chromosome:
+	input:
+		"processed/aligned/{sample}.sorted.bam"
+	output:
+		"processed/metrics/{sample].chr_counts.txt"
+	resources:
+		mem = 100
+	threads: 1
+	shell:
+		"samtools view {input} | cut -f3 | sort | uniq -c > {output}"
+
 
 
 
