@@ -226,11 +226,9 @@ rule convert_bed_to_bigwig:
 
 rule make_all_bigwigs:
 	input:
-		expand("processed/bigwig/{sample}.bam", sample=config["samples"])
+		expand("processed/bigwig/{sample}.bw", sample=config["samples"])
 	output:
 		"processed/out.txt"
 	shell:
-		echo "Done" > {output}
-
-
+		"echo 'Done' > {output}"
 

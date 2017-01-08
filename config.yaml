@@ -2,7 +2,4 @@ bwa_index: ../../../annotations/GRCh38/bwa_index/GRCh38
 picard_path: '/software/java/bin/java -jar -Xmx1800m /nfs/users/nfs_k/ka8/software/picard-tools-1.134/picard.jar'
 bedpe2bed: '~/software/utils/coverage/bedpe2bed.py'
 chromosome_lengths: ../../../annotations/GRCh38/bt2-index/chromosome_lengths.txt
-
-samples:
-	HSC_4983_1,
-	Bcell_1022_1
+samples: [HSC_4983_1, Bcell_1022_1]
