@@ -1,5 +1,3 @@
-SAMPLES = ["HSC_4983_1"]
-
 configfile: "config.yaml"
 
 #Convert SRA files to fastq
@@ -226,6 +224,13 @@ rule convert_bed_to_bigwig:
 		"gzip {params.bedgraph}"
 
 
+rule make_all_bigwigs:
+	input:
+		expand("processed/bigwig/{sample}.bam", sample=config["samples"])
+	output:
+		"processed/out.txt"
+	shell:
+		echo "Done" > {output}
 
 
 
