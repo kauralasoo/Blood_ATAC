@@ -39,8 +39,8 @@ rule extract_nextera_barcodes:
 		mem = 50
 	threads: 1
 	shell:
-		"python ~/software/utils/fastq/extractNexteraBarcode.py --fastq {input.f1} --type read1 > {output.f1} && "
-		"python ~/software/utils/fastq/extractNexteraBarcode.py --fastq {input.f2} --type read2 > {output.f2}"
+		"python scripts/extractNexteraBarcode.py --fastq {input.f1} --type read1 > {output.f1} && "
+		"python scripts/extractNexteraBarcode.py --fastq {input.f2} --type read2 > {output.f2}"
 
 #Trim adapters from fastq files
 rule trim_adapters:
@@ -192,7 +192,7 @@ rule bam_to_fragment_bed:
 		mem = 1000
 	threads: 2
 	shell:
-		"bedtools bamtobed -bedpe -i {input} | python {config[bedpe2bed]} --maxFragmentLength 1000 | sort -k 1,1 | gzip > {output}"
+		"bedtools bamtobed -bedpe -i {input} | python scripts/bedpe2bed.py --maxFragmentLength 1000 | sort -k 1,1 | gzip > {output}"
 
 #Count the number of occurences of each fragment length in the fragments bed file
 rule count_fragment_lengths:
