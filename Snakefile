@@ -53,7 +53,7 @@ rule trim_adapters:
 		prefix="processed/trimmed/{sample}"
 	resources:
 		mem = 1000
-	threads: 1
+	threads: 3
 	output:
 		"processed/trimmed/{sample}-trimmed-pair1.fastq.gz",
 		"processed/trimmed/{sample}-trimmed-pair2.fastq.gz"
