@@ -1,4 +1,4 @@
 bwa_index: /lustre/scratch117/cellgen/team170/ka8/annotations/GRCh38/bwa_index/GRCh38
 picard_path: '/software/java/bin/java -jar -Xmx1800m /nfs/users/nfs_k/ka8/software/picard-tools-1.134/picard.jar'
 chromosome_lengths: /lustre/scratch117/cellgen/team170/ka8/annotations/GRCh38/bt2-index/chromosome_lengths.txt
-samples: [Mono_4983_1,Mono_4983_2,Mono_6792_1,Mono_6792_2,Mono_7256_1,Mono_7256_2]
+samples: [Mono_4983_1,Mono_4983_2,Mono_6792_1,Mono_6792_2,Mono_7256_1,Mono_7256_2,Bcell_1022_1,Bcell_4983_1,Bcell_5483_1,Bcell_5483_2]
