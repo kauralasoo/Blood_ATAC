@@ -187,17 +187,29 @@ rule bam_to_fragment_bed:
 	input:
 		"processed/filtered/{sample}.sortedByName.bam"
 	output:
-		"processed/filtered/{sample}.fragments.bed.gz"
+		"processed/bed/{sample}.fragments.bed.gz"
 	resources:
 		mem = 1000
 	threads: 2
 	shell:
 		"bedtools bamtobed -bedpe -i {input} | python scripts/bedpe2bed.py --maxFragmentLength 1000 | sort -k 1,1 | gzip > {output}"
 
+#Convert fragment bed files into cutsite bed files
+rule fragments_to_cutsites_bed:
+	input:
+		"processed/bed/{sample}.fragments.bed.gz"
+	output:
+		"processed/bed/{sample}.cutsites.bed.gz"
+	resources:
+		mem = 1000
+	threads: 2
+	shell:
+		"python scripts/fragmentsToCutSites.py --bed {input} | sort -k1,1 | gzip > {output}"
+
 #Count the number of occurences of each fragment length in the fragments bed file
 rule count_fragment_lengths:
 	input:
-		"processed/filtered/{sample}.fragments.bed.gz"
+		"processed/bed/{sample}.fragments.bed.gz"
 	output:
 		"processed/metrics/{sample}.fragment_lengths.txt"
 	resources:
@@ -209,7 +221,7 @@ rule count_fragment_lengths:
 #Convert fragment bed file into bigwig
 rule convert_bed_to_bigwig:
 	input:
-		"processed/filtered/{sample}.fragments.bed.gz"
+		"processed/bed/{sample}.fragments.bed.gz"
 	output:
 		bedgraph = "processed/bigwig/{sample}.bg.gz",
 		bigwig = "processed/bigwig/{sample}.bw"
@@ -223,12 +235,18 @@ rule convert_bed_to_bigwig:
 		"bedGraphToBigWig {params.bedgraph} {config[chromosome_lengths]} {output.bigwig} && "
 		"gzip {params.bedgraph}"
 
-
-rule make_all_bigwigs:
+#Make sure that all final output files get created
+rule make_all:
 	input:
 		expand("processed/bigwig/{sample}.bw", sample=config["samples"])
+		expand("processed/bed/{sample}.cutsites.bed.gz", sample=config["samples"])
+		expand("processed/metrics/{sample}.fragment_lengths.txt", sample=config["samples"])
+		expand("processed/metrics/{sample}.chr_counts.txt", sample=config["samples"])
 	output:
 		"processed/out.txt"
+	resources:
+		mem = 100
+	threads: 1
 	shell:
 		"echo 'Done' > {output}"
 
