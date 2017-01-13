@@ -97,7 +97,7 @@ rule sort_bams_by_position:
 	output:
 		"processed/aligned/{sample}.sorted.bam"
 	resources:
-		mem = 4000
+		mem = 8000
 	threads: 4
 	shell:
 		"samtools sort -T processed/aligned/{wildcards.sample} -O bam -@ {threads} {input} > {output}"
@@ -176,7 +176,7 @@ rule sort_bams_by_name:
 	output:
 		"processed/filtered/{sample}.sortedByName.bam"
 	resources:
-		mem = 4000
+		mem = 8000
 	threads: 4
 	shell:
 		"samtools sort -T processed/filtered/{wildcards.sample} -O bam -@ {threads} -n {input} > {output}"
