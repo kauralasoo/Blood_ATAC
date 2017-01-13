@@ -154,7 +154,7 @@ rule remove_duplicates:
 		mem = 2200
 	threads: 4
 	shell:
-		"{config[picard_path]}r MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
+		"{config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}"
 
 #Count the number of reads per chromosome (QC metric)
 rule reads_per_chromosome:
