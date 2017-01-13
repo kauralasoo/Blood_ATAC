@@ -127,7 +127,7 @@ rule filter_properly_paired:
 	params:
 		chr_list = "1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9 X Y"
 	shell:
-		"samtools view -h -b -f 2 {input} {params.chr_list} > {output}"
+		"samtools view -h -b -f 2 {input.bam} {params.chr_list} > {output}"
 
 #Remove BWA entry from the BAM file header (conflicts with MarkDuplicates)
 rule remove_bwa_header:
