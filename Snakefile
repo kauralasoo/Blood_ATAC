@@ -238,9 +238,9 @@ rule convert_bed_to_bigwig:
 #Make sure that all final output files get created
 rule make_all:
 	input:
-		expand("processed/bigwig/{sample}.bw", sample=config["samples"])
-		expand("processed/bed/{sample}.cutsites.bed.gz", sample=config["samples"])
-		expand("processed/metrics/{sample}.fragment_lengths.txt", sample=config["samples"])
+		expand("processed/bigwig/{sample}.bw", sample=config["samples"]),
+		expand("processed/bed/{sample}.cutsites.bed.gz", sample=config["samples"]),
+		expand("processed/metrics/{sample}.fragment_lengths.txt", sample=config["samples"]),
 		expand("processed/metrics/{sample}.chr_counts.txt", sample=config["samples"])
 	output:
 		"processed/out.txt"
