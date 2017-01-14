@@ -206,6 +206,22 @@ rule fragments_to_cutsites_bed:
 	shell:
 		"python scripts/fragmentsToCutSites.py --bed {input} | sort -k1,1 | gzip > {output}"
 
+#Call peaks from cut site bed files
+rule call_peaks:
+	input:
+		"{dataset}/bed/{sample}.cutsites.bed.gz"
+	output:
+		narrowPeak = "{dataset}/peaks/{sample}_peaks.narrowPeak"
+	resources:
+		mem = 1000
+	threads: 1
+	params:
+		outdir = "{dataset}/peaks/",
+		xls = "{dataset}/peaks/{sample}_peaks.xls"
+	shell:
+		"macs2 callpeak --nomodel -t {input} --shift 25 --extsize 50 -q 0.01 -n {wildcards.sample} --outdir {params.outdir} -f BED &&"
+		"rm {params.xls}"
+
 #Count the number of occurences of each fragment length in the fragments bed file
 rule count_fragment_lengths:
 	input:
