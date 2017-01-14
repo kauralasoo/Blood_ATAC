@@ -3,24 +3,24 @@ configfile: "config.yaml"
 #Convert SRA files to fastq
 rule SRA_to_fastq:
 	input:
-		"processed/SRR/{sample}.sra"
+		"{dataset}/SRR/{sample}.sra"
 	output:
-		"processed/fastq/{sample}_1.fastq.gz",
-		"processed/fastq/{sample}_2.fastq.gz"
+		"{dataset}/fastq/{sample}_1.fastq.gz",
+		"{dataset}/fastq/{sample}_2.fastq.gz"
 	resources:
 		mem = 1000
 	threads: 1
 	shell:
-		"fastq-dump --split-files --gzip --skip-technical --dumpbase --clip --outdir processed/fastq/ {input}"
+		"fastq-dump --split-files --gzip --skip-technical --dumpbase --clip --outdir {wildcards.dataset}/fastq/ {input}"
 
 #Rename the fastq files to specify pairing correctly
 rule rename_fastq:
 	input:
-		f1 = "processed/fastq/{sample}_1.fastq.gz",
-		f2 = "processed/fastq/{sample}_2.fastq.gz"
+		f1 = "{dataset}/fastq/{sample}_1.fastq.gz",
+		f2 = "{dataset}/fastq/{sample}_2.fastq.gz"
 	output:
-		f1 = "processed/fastq/{sample}.1.fastq.gz",
-		f2 = "processed/fastq/{sample}.2.fastq.gz"
+		f1 = "{dataset}/fastq/{sample}.1.fastq.gz",
+		f2 = "{dataset}/fastq/{sample}.2.fastq.gz"
 	resources:
 		mem = 50
 	threads: 1
@@ -30,11 +30,11 @@ rule rename_fastq:
 #Extract Nextera barcodes from the fastq files
 rule extract_nextera_barcodes:
 	input:
-		f1 = "processed/fastq/{sample}.1.fastq.gz",
-		f2 = "processed/fastq/{sample}.2.fastq.gz"
+		f1 = "{dataset}/fastq/{sample}.1.fastq.gz",
+		f2 = "{dataset}/fastq/{sample}.2.fastq.gz"
 	output:
-		f1 = "processed/trimmed/{sample}.1.barcode.txt",
-		f2 = "processed/trimmed/{sample}.2.barcode.txt"
+		f1 = "{dataset}/trimmed/{sample}.1.barcode.txt",
+		f2 = "{dataset}/trimmed/{sample}.2.barcode.txt"
 	resources:
 		mem = 50
 	threads: 1
@@ -45,29 +45,29 @@ rule extract_nextera_barcodes:
 #Trim adapters from fastq files
 rule trim_adapters:
 	input:
-		fastq1 = "processed/fastq/{sample}.1.fastq.gz",
-		fastq2 = "processed/fastq/{sample}.2.fastq.gz",
-		barcode1 = "processed/trimmed/{sample}.1.barcode.txt",
-		barcode2 = "processed/trimmed/{sample}.2.barcode.txt"
+		fastq1 = "{dataset}/fastq/{sample}.1.fastq.gz",
+		fastq2 = "{dataset}/fastq/{sample}.2.fastq.gz",
+		barcode1 = "{dataset}/trimmed/{sample}.1.barcode.txt",
+		barcode2 = "{dataset}/trimmed/{sample}.2.barcode.txt"
 	params:
-		prefix="processed/trimmed/{sample}"
+		prefix="{dataset}/trimmed/{sample}"
 	resources:
 		mem = 1000
 	threads: 3
 	output:
-		"processed/trimmed/{sample}-trimmed-pair1.fastq.gz",
-		"processed/trimmed/{sample}-trimmed-pair2.fastq.gz"
+		"{dataset}/trimmed/{sample}-trimmed-pair1.fastq.gz",
+		"{dataset}/trimmed/{sample}-trimmed-pair2.fastq.gz"
 	script:
 		"scripts/trim_adapters.py"
 
 #Rename trimmed fastq files from skewer
 rule rename_trimmed_fastq:
 	input:
-		f1 = "processed/trimmed/{sample}-trimmed-pair1.fastq.gz",
-		f2 = "processed/trimmed/{sample}-trimmed-pair2.fastq.gz"
+		f1 = "{dataset}/trimmed/{sample}-trimmed-pair1.fastq.gz",
+		f2 = "{dataset}/trimmed/{sample}-trimmed-pair2.fastq.gz"
 	output:
-		f1 = "processed/trimmed/{sample}.1.trimmed.fastq.gz",
-		f2 = "processed/trimmed/{sample}.2.trimmed.fastq.gz"
+		f1 = "{dataset}/trimmed/{sample}.1.trimmed.fastq.gz",
+		f2 = "{dataset}/trimmed/{sample}.2.trimmed.fastq.gz"
 	resources:
 		mem = 50
 	threads: 1
@@ -77,10 +77,10 @@ rule rename_trimmed_fastq:
 #Align reads to the reference genome using BWA
 rule align_reads:
 	input:
-		"processed/trimmed/{sample}.1.trimmed.fastq.gz",
-		"processed/trimmed/{sample}.2.trimmed.fastq.gz"
+		"{dataset}/trimmed/{sample}.1.trimmed.fastq.gz",
+		"{dataset}/trimmed/{sample}.2.trimmed.fastq.gz"
 	output:
-		"processed/aligned/{sample}.bam"
+		"{dataset}/aligned/{sample}.bam"
 	params:
 		genome = config["bwa_index"],
 		rg="@RG\tID:{sample}\tSM:{sample}"
@@ -93,21 +93,21 @@ rule align_reads:
 #Sort BAM files by coordinates
 rule sort_bams_by_position:
 	input:
-		"processed/aligned/{sample}.bam"
+		"{dataset}/aligned/{sample}.bam"
 	output:
-		"processed/aligned/{sample}.sorted.bam"
+		"{dataset}/aligned/{sample}.sorted.bam"
 	resources:
 		mem = 8000
 	threads: 4
 	shell:
-		"samtools sort -T processed/aligned/{wildcards.sample} -O bam -@ {threads} {input} > {output}"
+		"samtools sort -T {wildcards.dataset}/aligned/{wildcards.sample} -O bam -@ {threads} {input} > {output}"
 
 #Index sorted bams
 rule index_bams:
 	input:
-		"processed/aligned/{sample}.sorted.bam"
+		"{dataset}/aligned/{sample}.sorted.bam"
 	output:
-		"processed/aligned/{sample}.sorted.bam.bai"
+		"{dataset}/aligned/{sample}.sorted.bam.bai"
 	resources:
 		mem = 50
 	threads: 1
@@ -117,10 +117,10 @@ rule index_bams:
 #Keep only properly paired reads from nuclear chromosomes (remove MT)
 rule filter_properly_paired:
 	input:
-		bam = "processed/aligned/{sample}.sorted.bam",
-		index = "processed/aligned/{sample}.sorted.bam.bai"
+		bam = "{dataset}/aligned/{sample}.sorted.bam",
+		index = "{dataset}/aligned/{sample}.sorted.bam.bai"
 	output:
-		"processed/filtered/{sample}.filtered.bam"
+		"{dataset}/filtered/{sample}.filtered.bam"
 	resources:
 		mem = 100
 	threads: 1
@@ -132,10 +132,10 @@ rule filter_properly_paired:
 #Remove BWA entry from the BAM file header (conflicts with MarkDuplicates)
 rule remove_bwa_header:
 	input:
-		"processed/filtered/{sample}.filtered.bam"
+		"{dataset}/filtered/{sample}.filtered.bam"
 	output:
-		new_header = "processed/filtered/{sample}.new_header.txt",
-		bam = "processed/filtered/{sample}.reheadered.bam"
+		new_header = "{dataset}/filtered/{sample}.new_header.txt",
+		bam = "{dataset}/filtered/{sample}.reheadered.bam"
 	resources:
 		mem = 100
 	threads: 1
@@ -146,10 +146,10 @@ rule remove_bwa_header:
 #Remove duplicates using Picard MarkDuplicates
 rule remove_duplicates:
 	input:
-		"processed/filtered/{sample}.reheadered.bam"
+		"{dataset}/filtered/{sample}.reheadered.bam"
 	output:
-		bam = "processed/filtered/{sample}.no_duplicates.bam",
-		metrics = "processed/metrics/{sample}.MarkDuplicates.txt"
+		bam = "{dataset}/filtered/{sample}.no_duplicates.bam",
+		metrics = "{dataset}/metrics/{sample}.MarkDuplicates.txt"
 	resources:
 		mem = 2200
 	threads: 4
@@ -159,9 +159,9 @@ rule remove_duplicates:
 #Count the number of reads per chromosome (QC metric)
 rule reads_per_chromosome:
 	input:
-		"processed/aligned/{sample}.sorted.bam"
+		"{dataset}/aligned/{sample}.sorted.bam"
 	output:
-		"processed/metrics/{sample}.chr_counts.txt"
+		"{dataset}/metrics/{sample}.chr_counts.txt"
 	resources:
 		mem = 100
 	threads: 1
@@ -172,22 +172,22 @@ rule reads_per_chromosome:
 #Sort BAM files by coordinates
 rule sort_bams_by_name:
 	input:
-		"processed/filtered/{sample}.no_duplicates.bam"
+		"{dataset}/filtered/{sample}.no_duplicates.bam"
 	output:
-		"processed/filtered/{sample}.sortedByName.bam"
+		"{dataset}/filtered/{sample}.sortedByName.bam"
 	resources:
 		mem = 8000
 	threads: 4
 	shell:
-		"samtools sort -T processed/filtered/{wildcards.sample} -O bam -@ {threads} -n {input} > {output}"
+		"samtools sort -T {dataset}/filtered/{wildcards.sample} -O bam -@ {threads} -n {input} > {output}"
 
 #Convert the bam file to a bed file of fragments
 #First to bedpe and then to bed
 rule bam_to_fragment_bed:
 	input:
-		"processed/filtered/{sample}.sortedByName.bam"
+		"{dataset}/filtered/{sample}.sortedByName.bam"
 	output:
-		"processed/bed/{sample}.fragments.bed.gz"
+		"{dataset}/bed/{sample}.fragments.bed.gz"
 	resources:
 		mem = 1000
 	threads: 2
@@ -197,9 +197,9 @@ rule bam_to_fragment_bed:
 #Convert fragment bed files into cutsite bed files
 rule fragments_to_cutsites_bed:
 	input:
-		"processed/bed/{sample}.fragments.bed.gz"
+		"{dataset}/bed/{sample}.fragments.bed.gz"
 	output:
-		"processed/bed/{sample}.cutsites.bed.gz"
+		"{dataset}/bed/{sample}.cutsites.bed.gz"
 	resources:
 		mem = 1000
 	threads: 2
@@ -209,9 +209,9 @@ rule fragments_to_cutsites_bed:
 #Count the number of occurences of each fragment length in the fragments bed file
 rule count_fragment_lengths:
 	input:
-		"processed/bed/{sample}.fragments.bed.gz"
+		"{dataset}/bed/{sample}.fragments.bed.gz"
 	output:
-		"processed/metrics/{sample}.fragment_lengths.txt"
+		"{dataset}/metrics/{sample}.fragment_lengths.txt"
 	resources:
 		mem = 100
 	threads: 1
@@ -221,12 +221,12 @@ rule count_fragment_lengths:
 #Convert fragment bed file into bigwig
 rule convert_bed_to_bigwig:
 	input:
-		"processed/bed/{sample}.fragments.bed.gz"
+		"{dataset}/bed/{sample}.fragments.bed.gz"
 	output:
-		bedgraph = "processed/bigwig/{sample}.bg.gz",
-		bigwig = "processed/bigwig/{sample}.bw"
+		bedgraph = "{dataset}/bigwig/{sample}.bg.gz",
+		bigwig = "{dataset}/bigwig/{sample}.bw"
 	params:
-		bedgraph = "processed/bigwig/{sample}.bg"
+		bedgraph = "{dataset}/bigwig/{sample}.bg"
 	resources:
 		mem = 3000
 	threads: 1
@@ -238,12 +238,12 @@ rule convert_bed_to_bigwig:
 #Make sure that all final output files get created
 rule make_all:
 	input:
-		expand("processed/bigwig/{sample}.bw", sample=config["samples"]),
-		expand("processed/bed/{sample}.cutsites.bed.gz", sample=config["samples"]),
-		expand("processed/metrics/{sample}.fragment_lengths.txt", sample=config["samples"]),
-		expand("processed/metrics/{sample}.chr_counts.txt", sample=config["samples"])
+		expand("{dataset}/bigwig/{sample}.bw", sample=config["samples"]),
+		expand("{dataset}/bed/{sample}.cutsites.bed.gz", sample=config["samples"]),
+		expand("{dataset}/metrics/{sample}.fragment_lengths.txt", sample=config["samples"]),
+		expand("{dataset}/metrics/{sample}.chr_counts.txt", sample=config["samples"])
 	output:
-		"processed/out.txt"
+		"{dataset}/out.txt"
 	resources:
 		mem = 100
 	threads: 1
