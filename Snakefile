@@ -169,17 +169,17 @@ rule reads_per_chromosome:
 		"samtools view {input} | cut -f3 | sort | uniq -c > {output}"
 
 
-#Sort BAM files by coordinates
+#Sort BAM files by read name
 rule sort_bams_by_name:
 	input:
 		"{dataset}/filtered/{sample}.no_duplicates.bam"
 	output:
-		"{dataset}/filtered/{sample}.sortedByName.bam"
+		temp("{dataset}/filtered/{sample}.sortedByName.bam")
 	resources:
 		mem = 8000
 	threads: 4
 	shell:
-		"samtools sort -T {dataset}/filtered/{wildcards.sample} -O bam -@ {threads} -n {input} > {output}"
+		"samtools sort -T {wildcards.dataset}/filtered/{wildcards.sample} -O bam -@ {threads} -n {input} > {output}"
 
 #Convert the bam file to a bed file of fragments
 #First to bedpe and then to bed
@@ -211,16 +211,23 @@ rule call_peaks:
 	input:
 		"{dataset}/bed/{sample}.cutsites.bed.gz"
 	output:
-		narrowPeak = "{dataset}/peaks/{sample}_peaks.narrowPeak"
+		narrowPeak = "{dataset}/peaks/{sample}.narrowPeak.gz",
+		summits = "{dataset}/peaks/{sample}.summits.bed.gz"
 	resources:
-		mem = 1000
+		mem = 2500
 	threads: 1
 	params:
 		outdir = "{dataset}/peaks/",
-		xls = "{dataset}/peaks/{sample}_peaks.xls"
+		xls = "{dataset}/peaks/{sample}_peaks.xls",
+		temp_peaks = "{dataset}/peaks/{sample}_peaks.narrowPeak",
+		temp_summits = "{dataset}/peaks/{sample}_summits.bed"
 	shell:
-		"macs2 callpeak --nomodel -t {input} --shift 25 --extsize 50 -q 0.01 -n {wildcards.sample} --outdir {params.outdir} -f BED &&"
-		"rm {params.xls}"
+		"macs2 callpeak --nomodel -t {input} --shift 25 --extsize 50 -q 0.01 -n {wildcards.sample} --outdir {params.outdir} -f BED && "
+		"rm {params.xls} && "
+		"mv {params.temp_peaks} {output.narrowPeak} && "
+		"mv {params.temp_summits} {output.summits} && "
+		"gzip {output.narrowPeak} && "
+		"gzip {output.summits}"
 
 #Count the number of occurences of each fragment length in the fragments bed file
 rule count_fragment_lengths:
@@ -239,7 +246,6 @@ rule convert_bed_to_bigwig:
 	input:
 		"{dataset}/bed/{sample}.fragments.bed.gz"
 	output:
-		bedgraph = "{dataset}/bigwig/{sample}.bg.gz",
 		bigwig = "{dataset}/bigwig/{sample}.bw"
 	params:
 		bedgraph = "{dataset}/bigwig/{sample}.bg"
@@ -249,15 +255,15 @@ rule convert_bed_to_bigwig:
 	shell:
 		"bedtools genomecov -bga -i {input} -g {config[chromosome_lengths]} > {params.bedgraph} && "
 		"bedGraphToBigWig {params.bedgraph} {config[chromosome_lengths]} {output.bigwig} && "
-		"gzip {params.bedgraph}"
+		"rm {params.bedgraph}"
 
 #Make sure that all final output files get created
 rule make_all:
 	input:
-		expand("{dataset}/bigwig/{sample}.bw", sample=config["samples"]),
-		expand("{dataset}/bed/{sample}.cutsites.bed.gz", sample=config["samples"]),
-		expand("{dataset}/metrics/{sample}.fragment_lengths.txt", sample=config["samples"]),
-		expand("{dataset}/metrics/{sample}.chr_counts.txt", sample=config["samples"])
+		expand("{{dataset}}/bigwig/{sample}.bw", sample=config["samples"]),
+		expand("{{dataset}}/peaks/{sample}.narrowPeak.gz", sample=config["samples"]),
+		expand("{{dataset}}/metrics/{sample}.fragment_lengths.txt", sample=config["samples"]),
+		expand("{{dataset}}/metrics/{sample}.chr_counts.txt", sample=config["samples"])
 	output:
 		"{dataset}/out.txt"
 	resources:
