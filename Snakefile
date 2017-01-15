@@ -148,7 +148,7 @@ rule remove_duplicates:
 	input:
 		"{dataset}/filtered/{sample}.reheadered.bam"
 	output:
-		bam = "{dataset}/filtered/{sample}.no_duplicates.bam",
+		bam = protected("{dataset}/filtered/{sample}.no_duplicates.bam"),
 		metrics = "{dataset}/metrics/{sample}.MarkDuplicates.txt"
 	resources:
 		mem = 2200
