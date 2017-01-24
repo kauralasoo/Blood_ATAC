@@ -6,6 +6,7 @@ import subprocess
 
 parser = argparse.ArgumentParser(description = "Convert BEDPE into a BED file of fragments.", formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--maxFragmentLength", help = "Maximum fragment length between two pairs of reads.", default = "1000")
+parser.add_argument("--minFragmentLength", help = "Minimum fragment length between two pairs of reads.", default = "30")
 args = parser.parse_args()
 
 for line in fileinput.input("-"):
@@ -15,6 +16,6 @@ for line in fileinput.input("-"):
 	if fields[0] == fields[3]:
 		if fields[0] != ".":
 			fragment_length = int(fields[5]) - int(fields[1])
-			if fragment_length < int(args.maxFragmentLength):
+			if (fragment_length < int(args.maxFragmentLength)) and (fragment_length > int(args.minFragmentLength)):
 				out = "\t".join([fields[0], fields[1], fields[5], fields[6], str(fragment_length)])
 				print(out)
