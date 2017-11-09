@@ -61,3 +61,17 @@ rule rename_chromosomes_back:
         module load bcftools-1.6
         bcftools annotate -O z --rename-chrs {input.chromosome_map} {input.vcf} > {output.vcf}
         """
+
+rule sort_vcf:
+    input:
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.vcf.gz"
+    output:
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.sorted.vcf.gz"
+    threads: 1
+    resources:
+        mem = 3000
+    shell:
+        """
+        module load bcftools-1.6
+        bcftools sort -m 2000 -o {output.vcf} -O z {input.vcf}
+        """
