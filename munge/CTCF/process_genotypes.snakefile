@@ -32,17 +32,17 @@ rule run_CrossMap:
         bgzip {params.temp_vcf}
         """
 
-    rule postprocess_CrossMap:
-        input:
-            vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.vcf.gz"
-        output:
-            vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.post.vcf.gz"
-        threads: 1
-        resources:
-            mem = 1000
-        shell:
-            """
-            source activate py2.7
-            module loaf bcftools-1.6
-            python ../../scripts/postprocessCrossmap.py --vcf {input.vcf} | bgzip > {output.vcf}
-            """
+rule postprocess_CrossMap:
+    input:
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.vcf.gz"
+    output:
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.post.vcf.gz"
+    threads: 1
+    resources:
+        mem = 1000
+    shell:
+        """
+        source activate py2.7
+        module loaf bcftools-1.6
+        python ../../scripts/postprocessCrossmap.py --vcf {input.vcf} | bgzip > {output.vcf}
+        """
