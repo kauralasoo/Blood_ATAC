@@ -46,3 +46,18 @@ rule postprocess_CrossMap:
         module load bcftools-1.6
         python ../../scripts/postprocessCrossmap.py --vcf {input.vcf} | bgzip > {output.vcf}
         """
+
+rule rename_chromosomes_back:
+    input:
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.post.vcf.gz",
+        chromosome_map = "../../data/liftOver/Hg38ToGRCh38_chromosome_map.txt",
+    output:
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.vcf.gz"
+    threads: 1
+    resources:
+        mem = 1000
+    shell:
+        """
+        module load bcftools-1.6
+        bcftools annotate -O z --rename-chrs {input.chromosome_map} {input.vcf} > {output.vcf}
+        """
