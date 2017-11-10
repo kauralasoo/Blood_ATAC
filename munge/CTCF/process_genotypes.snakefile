@@ -64,14 +64,14 @@ rule rename_chromosomes_back:
 
 rule sort_vcf:
     input:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.vcf.gz"
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.common.vcf.gz"
     output:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.sorted.vcf.gz"
+        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.common.sorted.vcf.gz"
     threads: 1
     resources:
-        mem = 3000
+        mem = 25000
     shell:
         """
         module load bcftools-1.6
-        bcftools sort -m 2000 -o {output.vcf} -O z {input.vcf}
+        bcftools sort -m 20000 -o {output.vcf} -O z {input.vcf}
         """
