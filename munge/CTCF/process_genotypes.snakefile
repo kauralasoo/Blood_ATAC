@@ -73,5 +73,5 @@ rule sort_vcf:
     shell:
         """
         module load bcftools-1.6
-        bcftools sort -m 20000 -o {output.vcf} -O z {input.vcf}
+        bcftools sort -m 20000M -o {output.vcf} -O z {input.vcf}
         """
