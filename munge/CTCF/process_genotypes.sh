@@ -14,3 +14,13 @@ snakemake --cluster ../../scripts/snakemake_submit_UT.py -np --snakefile process
 
 #Keep only common SNPs
 bcftools filter -i 'MAF[0] >= 0.05' -O z CTCF_51_samples.GRCh38.vcf.gz > CTCF_51_samples.GRCh38.common.vcf.gz
+
+#Keep only SNPs with correct REF allele
+bcftools norm -c x -O z -f ../../../../../annotations/GRCh38/Homo_sapiens.GRCh38.dna.primary_assembly.fa CTCF_51_samples.GRCh38.common.sorted.vcf.gz > correct_ref.vcf.gz
+
+#Keep only bi-allelic and add missing names if necessary
+bcftools norm -m+any correct_ref.vcf.gz | bcftools view -m2 -M2 - | bcftools annotate -O z --set-id +'%CHROM\_%POS' > CTCF_51_samples.GRCh38.common.sorted.norm.vcf.gz
+
+#Remove any remaining duplicates
+bcftools norm -d both -O z CTCF_51_samples.GRCh38.common.sorted.norm.vcf.gz > CTCF_51_samples.GRCh38.common.sorted.norm.dedup.vcf.gz
+
