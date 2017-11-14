@@ -1,9 +1,9 @@
 rule rename_chromosomes:
     input:
-        vcf = "CTCF/genotypes/vcf/GRCh37/CTCF_51_samples.GRCh37.reheadered.vcf.gz",
+        vcf = "genotypes/vcf/GRCh37/{study}.GRCh37.vcf.gz",
         chromosome_map = "../../data/liftOver/GRCh38ToHg38_chromosome_map.txt",
     output:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg19.vcf.gz",
+        vcf = "genotypes/vcf/GRCh38/{study}.hg19.vcf.gz",
     threads: 1
     resources:
         mem = 1000
@@ -15,13 +15,13 @@ rule rename_chromosomes:
 
 rule run_CrossMap:
     input:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg19.vcf.gz",
+        vcf = "genotypes/vcf/GRCh38/{study}.hg19.vcf.gz",
         chain = "../../data/liftOver/hg19ToHg38.over.chain",
         ref_genome = "/gpfs/rocket/home/a72094/annotations/hg38/hg38.fa",
     output:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.vcf.gz",
+        vcf = "genotypes/vcf/GRCh38/{study}.hg38.vcf.gz",
     params:
-        temp_vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.vcf"
+        temp_vcf = "genotypes/vcf/GRCh38/{study}.hg38.vcf"
     threads: 1
     resources:
         mem = 1000
@@ -34,9 +34,9 @@ rule run_CrossMap:
 
 rule postprocess_CrossMap:
     input:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.vcf.gz"
+        vcf = "genotypes/vcf/GRCh38/{study}.hg38.vcf.gz"
     output:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.post.vcf.gz"
+        vcf = "genotypes/vcf/GRCh38/{study}.hg38.post.vcf.gz"
     threads: 1
     resources:
         mem = 1000
@@ -49,10 +49,10 @@ rule postprocess_CrossMap:
 
 rule rename_chromosomes_back:
     input:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.hg38.post.vcf.gz",
+        vcf = "genotypes/vcf/GRCh38/{study}.hg38.post.vcf.gz",
         chromosome_map = "../../data/liftOver/Hg38ToGRCh38_chromosome_map.txt",
     output:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.vcf.gz"
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.vcf.gz"
     threads: 1
     resources:
         mem = 1000
@@ -64,9 +64,9 @@ rule rename_chromosomes_back:
 
 rule sort_vcf:
     input:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.common.vcf.gz"
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.vcf.gz"
     output:
-        vcf = "CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.common.sorted.vcf.gz"
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.vcf.gz"
     threads: 1
     resources:
         mem = 25000
@@ -75,3 +75,30 @@ rule sort_vcf:
         module load bcftools-1.6
         bcftools sort -m 20000M -o {output.vcf} -O z {input.vcf}
         """
+
+rule filter_ref_allele:
+    input:
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.vcf.gz"
+        fasta = "../../../../../annotations/GRCh38/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+    output:
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.ref.vcf.gz"
+    threads: 1
+    resources:
+        mem = 3000
+    shell
+        """
+        bcftools norm -c x -O z -f {input.ref} {input.vcf} > {output.vcf}
+        """
+
+rule remove_multialleic:
+    input:
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.ref.vcf.gz"
+    output:
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.ref.filtered.vcf.gz"
+    threads: 1
+    resources:
+        mem = 2000
+    shell:
+        "bcftools norm -m+any {input.vcf} | bcftools view -m2 -M2 - | "
+        "bcftools annotate --set-id +'%CHROM\_%POS' | "
+        "bcftools norm -d both -O z > {output.vcf}"
