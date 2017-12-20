@@ -20,7 +20,7 @@ rule align_with_bwa_aln:
 		"""
 		module load samtools-1.6
 		module load bwa-0.7.12
-		cp {input} {params.tmp_fq1}
+		cp {input} {params.tmp_fq}
 		bwa aln -t {threads} {params.genome} {params.tmp_fq} > {params.tmp_sai}
 		bwa samse -r '{params.rg}' {params.genome} {params.tmp_sai} {params.tmp_fq} | samtools view -b - > {params.tmp_bam}
 		cp {params.tmp_bam} {output}
