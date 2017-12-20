@@ -16,7 +16,7 @@ rule bam_to_fastq:
 #Make sure that all final output files get created
 rule make_all:
 	input:
-		expand("processed/{{dataset}}/fastq/{sample}.bw", sample=config["samples"])
+		expand("processed/{{dataset}}/fastq/{sample}.fastq.gz", sample=config["samples"])
 	output:
 		"processed/{dataset}/out.txt"
 	resources:
