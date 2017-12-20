@@ -24,3 +24,7 @@ bcftools norm -m+any correct_ref.vcf.gz | bcftools view -m2 -M2 - | bcftools ann
 #Remove any remaining duplicates
 bcftools norm -d both -O z CTCF_51_samples.GRCh38.common.sorted.norm.vcf.gz > CTCF_51_samples.GRCh38.common.sorted.norm.dedup.vcf.gz
 
+
+
+#### PU.1 dataset ####
+zcat full_header45.txt.gz chr1.gz chr11.gz chr12.gz chr13.gz chr14.gz chr15.gz chr16.gz chr17.gz chr18.gz chr19.gz chr2.gz chr20.gz chr21.gz chr22.gz | bgzip > PU1_45_samples.GRCh37.vcf.gz

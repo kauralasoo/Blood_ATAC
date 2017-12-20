@@ -1,4 +1,3 @@
-#!/bin/bash
 wget ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/MTAB/E-MTAB-3657/E-MTAB-3657.IP_06985_PU1_120521_6_sorted.bam
 wget ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/MTAB/E-MTAB-3657/E-MTAB-3657.IP_06986_PU1_120605_7_sorted.bam
 wget ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/MTAB/E-MTAB-3657/E-MTAB-3657.IP_06994_PU1_120605_4_sorted.bam
