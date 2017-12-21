@@ -23,6 +23,7 @@ rule align_with_bwa_aln:
 		module load samtools-1.6
 		module load bwa-0.7.12
 		cp {input} {params.tmp_fq}
+		mkdir {params.tmp_index_dir}
 		cp {params.index_dir}/* {params.tmp_index_dir}
 		bwa aln -t {threads} {params.tmp_index_dir}{params.index_name} {params.tmp_fq} > {params.tmp_sai}
 		bwa samse -r '{params.rg}' {params.tmp_index_dir}{params.index_name} {params.tmp_sai} {params.tmp_fq} | samtools view -b - > {params.tmp_bam}
