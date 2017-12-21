@@ -13,7 +13,7 @@ rule align_with_bwa_aln:
 		rg="@RG\tID:{sample}\tSM:{sample}",
 		tmp_fq = "/tmp/" + uuid.uuid4().hex + ".fastq.gz",
 		tmp_sai = "/tmp/" + uuid.uuid4().hex + ".sai",
-		tmp_bam = "/tmp/" + uuid.uuid4().hex + ".bam"
+		tmp_bam = "/tmp/" + uuid.uuid4().hex + ".bam",
 		tmp_index_dir = "/tmp/" + uuid.uuid4().hex + "/"
 	resources:
 		mem = 12000
