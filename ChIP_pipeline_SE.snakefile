@@ -76,7 +76,7 @@ rule filter_properly_paired:
 		bam = "processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam",
 		index = "processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam.bai"
 	output:
-		temp("{processed/dataset}/filtered/{sample}.filtered.bam")
+		temp("{processed/{dataset}/filtered/{sample}.filtered.bam")
 	resources:
 		mem = 100
 	threads: 1
