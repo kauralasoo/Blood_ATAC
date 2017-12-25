@@ -34,10 +34,78 @@ rule align_with_bwa_aln:
 		rm -r {params.tmp_index_dir}
 		"""
 
+#Sort BAM files by coordinates
+rule sort_bams_by_position:
+	input:
+		"processed/{dataset}/aligned/{sample}.bam"
+	output:
+		"processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam"
+	params:
+		local_tmp = "/tmp/" + uuid.uuid4().hex + "/"
+	resources:
+		mem = 8000
+	threads: 4
+	shell:
+		"""
+		module load samtools-1.6
+		mkdir {params.local_tmp}
+		cp {input} {params.local_tmp}/{wildcards.sample}.bam
+		samtools sort -T {params.local_tmp}/{wildcards.sample} -O bam -@ {threads} -o {params.local_tmp}/{wildcards.sample}.sortedByCoords.bam {params.local_tmp}/{wildcards.sample}.bam
+		cp {params.local_tmp}/{wildcards.sample}.sortedByCoords.bam {output}
+		rm -r {params.local_tmp}
+		"""
+
+#Index sorted bams
+rule index_bams:
+	input:
+		"processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam"
+	output:
+		"processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam.bai"
+	resources:
+		mem = 50
+	threads: 1
+	shell:
+		"""
+		module load samtools-1.6
+		samtools index {input}
+		"""
+
+#Remove BWA entry from the BAM file header (conflicts with MarkDuplicates)
+rule remove_bwa_header:
+	input:
+		"{dataset}/filtered/{sample}.filtered.bam"
+	output:
+		new_header = "{dataset}/filtered/{sample}.new_header.txt",
+		bam = "{dataset}/filtered/{sample}.reheadered.bam"
+	resources:
+		mem = 100
+	threads: 1
+	shell:
+		"samtools view -H {input} | grep -v 'ID:bwa' > {output.new_header} &&"
+		"samtools reheader {output.new_header} {input} > {output.bam}"
+
+#Remove duplicates using Picard MarkDuplicates
+rule remove_duplicates:
+	input:
+		"{dataset}/filtered/{sample}.reheadered.bam"
+	output:
+		bam = protected("{dataset}/filtered/{sample}.no_duplicates.bam"),
+		metrics = "{dataset}/metrics/{sample}.MarkDuplicates.txt"
+	resources:
+		mem = 2200
+	threads: 4
+	shell:
+		"""
+		module load jdk-1.8.0_25
+		{config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE= {output.metrics}
+		"""
+
+
 #Make sure that all final output files get created
 rule make_all:
 	input:
 		expand("processed/{{dataset}}/aligned/{sample}.bam", sample=config["samples"])
+		expand("processed/{{dataset}}/sorted_bam/{sample}.sortedByCoords.bam.bai", sample=config["samples"])
 	output:
 		"processed/{dataset}/out.txt"
 	resources:

@@ -14,4 +14,7 @@ snakemake --cluster scripts/snakemake_submit.py -p macrophages/out.txt --jobs 10
 
 #Process PU.1 data
 #Convert bams to fastq files
-snakemake --cluster scripts/snakemake_submit_UT.py -np processed/PU1/out.txt -s bam_to_fastq_SE.snakefile --configfile configs/config_PU1.yaml
+snakemake --cluster scripts/snakemake_submit_UT.py -np processed/PU1/out.txt -s bam_to_fastq_SE.snakefile --configfile configs/config_PU1.yaml --jobs 5
+
+#Run the processing pipeline
+snakemake --cluster scripts/snakemake_submit_UT.py -np processed/PU1/out.txt -s ChIP_pipeline_SE.snakefile --configfile configs/config_PU1.yaml --jobs 5
