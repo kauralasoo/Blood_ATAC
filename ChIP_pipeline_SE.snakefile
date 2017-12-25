@@ -6,7 +6,7 @@ rule align_with_bwa_aln:
 	input:
 		"processed/{dataset}/fastq/{sample}.fastq.gz"
 	output:
-		"processed/{dataset}/aligned/{sample}.bam"
+		temp("processed/{dataset}/aligned/{sample}.bam")
 	params:
 		index_dir = config["bwa_index_dir"],
 		index_name = config["bwa_index_name"],
@@ -39,7 +39,7 @@ rule sort_bams_by_position:
 	input:
 		"processed/{dataset}/aligned/{sample}.bam"
 	output:
-		"processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam"
+		protected("processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam")
 	params:
 		local_tmp = "/tmp/" + uuid.uuid4().hex + "/"
 	resources:
@@ -73,10 +73,10 @@ rule index_bams:
 #Keep only properly paired reads from nuclear chromosomes (remove MT)
 rule filter_properly_paired:
 	input:
-		bam = "{dataset}/sorted_bam/{sample}.sortedByCoords.bam",
-		index = "{dataset}/sorted_bam/{sample}.sortedByCoords.bam.bai"
+		bam = "processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam",
+		index = "processed/{dataset}/sorted_bam/{sample}.sortedByCoords.bam.bai"
 	output:
-		temp("{dataset}/filtered/{sample}.filtered.bam")
+		temp("{processed/dataset}/filtered/{sample}.filtered.bam")
 	resources:
 		mem = 100
 	threads: 1
@@ -91,10 +91,10 @@ rule filter_properly_paired:
 #Remove BWA entry from the BAM file header (conflicts with MarkDuplicates)
 rule remove_bwa_header:
 	input:
-		"{dataset}/filtered/{sample}.filtered.bam"
+		"processed/{dataset}/filtered/{sample}.filtered.bam"
 	output:
-		new_header = temp("{dataset}/filtered/{sample}.new_header.txt"),
-		bam = temp("{dataset}/filtered/{sample}.reheadered.bam")
+		new_header = temp("processed/{dataset}/filtered/{sample}.new_header.txt"),
+		bam = temp("processed/{dataset}/filtered/{sample}.reheadered.bam")
 	resources:
 		mem = 100
 	threads: 1
@@ -108,10 +108,10 @@ rule remove_bwa_header:
 #Remove duplicates using Picard MarkDuplicates
 rule remove_duplicates:
 	input:
-		"{dataset}/filtered/{sample}.reheadered.bam"
+		"processed/{dataset}/filtered/{sample}.reheadered.bam"
 	output:
-		bam = protected("{dataset}/filtered/{sample}.no_duplicates.bam"),
-		metrics = protected("{dataset}/metrics/{sample}.MarkDuplicates.txt")
+		bam = protected("processed/{dataset}/filtered/{sample}.no_duplicates.bam"),
+		metrics = protected("processed/{dataset}/metrics/{sample}.MarkDuplicates.txt")
 	resources:
 		mem = 2200
 	threads: 4
@@ -126,7 +126,8 @@ rule remove_duplicates:
 rule make_all:
 	input:
 		expand("processed/{{dataset}}/aligned/{sample}.bam", sample=config["samples"]),
-		expand("processed/{{dataset}}/sorted_bam/{sample}.sortedByCoords.bam.bai", sample=config["samples"])
+		expand("processed/{{dataset}}/sorted_bam/{sample}.sortedByCoords.bam.bai", sample=config["samples"]),
+		expand("processed/{{dataset}}/filtered/{sample}.no_duplicates.bam", sample=config["samples"])
 	output:
 		"processed/{dataset}/out.txt"
 	resources:
