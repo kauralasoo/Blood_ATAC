@@ -118,7 +118,7 @@ rule remove_duplicates:
 	shell:
 		"""
 		module load jdk-1.8.0_25
-		{config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE={output.metrics}
+		java -jar {config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE={output.metrics}
 		"""
 
 
@@ -127,7 +127,7 @@ rule make_all:
 	input:
 		expand("processed/{{dataset}}/aligned/{sample}.bam", sample=config["samples"]),
 		expand("processed/{{dataset}}/sorted_bam/{sample}.sortedByCoords.bam.bai", sample=config["samples"]),
-		#expand("processed/{{dataset}}/filtered/{sample}.no_duplicates.bam", sample=config["samples"])
+		expand("processed/{{dataset}}/filtered/{sample}.no_duplicates.bam", sample=config["samples"])
 	output:
 		"processed/{dataset}/out.txt"
 	resources:
