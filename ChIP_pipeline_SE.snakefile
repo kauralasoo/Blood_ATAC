@@ -118,7 +118,7 @@ rule remove_duplicates:
 	shell:
 		"""
 		module load jdk-1.8.0_25
-		java -jar {config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true METRICS_FILE={output.metrics}
+		java -jar {config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=LENIENT METRICS_FILE={output.metrics}
 		"""
 
 
