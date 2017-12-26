@@ -125,7 +125,7 @@ rule remove_duplicates:
 #Make sure that all final output files get created
 rule make_all:
 	input:
-		expand("processed/{{dataset}}/aligned/{sample}.bam", sample=config["samples"]),
+		#expand("processed/{{dataset}}/aligned/{sample}.bam", sample=config["samples"]),
 		expand("processed/{{dataset}}/sorted_bam/{sample}.sortedByCoords.bam.bai", sample=config["samples"]),
 		expand("processed/{{dataset}}/filtered/{sample}.no_duplicates.bam", sample=config["samples"])
 	output:
