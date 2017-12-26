@@ -113,7 +113,7 @@ rule remove_duplicates:
 		bam = protected("processed/{dataset}/filtered/{sample}.no_duplicates.bam"),
 		metrics = protected("processed/{dataset}/metrics/{sample}.MarkDuplicates.txt")
 	resources:
-		mem = 2200
+		mem = 12000
 	threads: 4
 	shell:
 		"""
