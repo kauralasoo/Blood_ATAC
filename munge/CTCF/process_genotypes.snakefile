@@ -87,6 +87,7 @@ rule filter_ref_allele:
         mem = 3000
     shell
         """
+        module load bcftools-1.6
         bcftools norm -c x -O z -f {input.ref} {input.vcf} > {output.vcf}
         """
 
@@ -99,6 +100,7 @@ rule remove_multialleic:
     resources:
         mem = 2000
     shell:
-        "bcftools norm -m+any {input.vcf} | bcftools view -m2 -M2 - | "
-        "bcftools annotate --set-id +'%CHROM\_%POS' | "
-        "bcftools norm -d both -O z > {output.vcf}"
+        """
+        module load bcftools-1.6
+        bcftools norm -m+any {input.vcf} | bcftools view -m2 -M2 - | bcftools annotate --set-id +'%CHROM\_%POS' | bcftools norm -d both -O z > {output.vcf}
+        """
