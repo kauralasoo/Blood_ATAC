@@ -1,7 +1,7 @@
 rule rename_chromosomes:
     input:
         vcf = "genotypes/vcf/GRCh37/{study}.GRCh37.vcf.gz",
-        chromosome_map = "../../data/liftOver/GRCh38ToHg38_chromosome_map.txt",
+        chromosome_map = "data/liftOver/GRCh38ToHg38_chromosome_map.txt",
     output:
         vcf = "genotypes/vcf/GRCh38/{study}.hg19.vcf.gz",
     threads: 1
@@ -16,7 +16,7 @@ rule rename_chromosomes:
 rule run_CrossMap:
     input:
         vcf = "genotypes/vcf/GRCh38/{study}.hg19.vcf.gz",
-        chain = "../../data/liftOver/hg19ToHg38.over.chain",
+        chain = "data/liftOver/hg19ToHg38.over.chain",
         ref_genome = "/gpfs/rocket/home/a72094/annotations/hg38/hg38.fa",
     output:
         vcf = "genotypes/vcf/GRCh38/{study}.hg38.vcf.gz",
@@ -50,7 +50,7 @@ rule postprocess_CrossMap:
 rule rename_chromosomes_back:
     input:
         vcf = "genotypes/vcf/GRCh38/{study}.hg38.post.vcf.gz",
-        chromosome_map = "../../data/liftOver/Hg38ToGRCh38_chromosome_map.txt",
+        chromosome_map = "data/liftOver/Hg38ToGRCh38_chromosome_map.txt",
     output:
         vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.vcf.gz"
     threads: 1
@@ -78,17 +78,17 @@ rule sort_vcf:
 
 rule filter_ref_allele:
     input:
-        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.vcf.gz"
-        fasta = "../../../../../annotations/GRCh38/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+        vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.vcf.gz",
+        fasta = "/gpfs/rocket/home/a72094/annotations/GRCh38/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
     output:
         vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.ref.vcf.gz"
     threads: 1
     resources:
         mem = 3000
-    shell
+    shell:
         """
         module load bcftools-1.6
-        bcftools norm -c x -O z -f {input.ref} {input.vcf} > {output.vcf}
+        bcftools norm -c x -O z -f {input.fasta} {input.vcf} > {output.vcf}
         """
 
 rule remove_multialleic:
