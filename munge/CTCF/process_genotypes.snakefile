@@ -44,7 +44,7 @@ rule postprocess_CrossMap:
         """
         source activate py2.7
         module load bcftools-1.6
-        python ../../scripts/postprocessCrossmap.py --vcf {input.vcf} | bgzip > {output.vcf}
+        python scripts/postprocessCrossmap.py --vcf {input.vcf} | bgzip > {output.vcf}
         """
 
 rule rename_chromosomes_back:
@@ -69,7 +69,7 @@ rule sort_vcf:
         vcf = "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.vcf.gz"
     threads: 1
     resources:
-        mem = 25000
+        mem = 35000
     shell:
         """
         module load bcftools-1.6
