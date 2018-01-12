@@ -104,3 +104,17 @@ rule remove_multialleic:
         module load bcftools-1.6
         bcftools norm -m+any {input.vcf} | bcftools view -m2 -M2 - | bcftools annotate --set-id +'%CHROM\_%POS' | bcftools norm -d both -O z > {output.vcf}
         """
+
+    rule keep_common:
+    input:
+        "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.ref.filtered.vcf.gz"
+    output:
+        "genotypes/vcf/GRCh38/{study}.GRCh38.final.vcf.gz"
+    threads: 1
+    resources:
+        mem = 3000
+    shell:
+        """
+        module load bcftools-1.6
+        bcftools filter -i 'MAF[0] >= 0.05' -O z {input} > {output}
+        """
