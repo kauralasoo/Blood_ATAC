@@ -105,7 +105,7 @@ rule remove_multialleic:
         bcftools norm -m+any {input.vcf} | bcftools view -m2 -M2 - | bcftools annotate --set-id +'%CHROM\_%POS' | bcftools norm -d both -O z > {output.vcf}
         """
 
-    rule keep_common:
+rule keep_common:
     input:
         "genotypes/vcf/GRCh38/{study}.GRCh38.sorted.ref.filtered.vcf.gz"
     output:
