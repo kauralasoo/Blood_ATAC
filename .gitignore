@@ -5,3 +5,6 @@ munge/.DS_Store
 .DS_Store
 .DS_Store
 .snakemake
+*.Rproj*
+results
+processed

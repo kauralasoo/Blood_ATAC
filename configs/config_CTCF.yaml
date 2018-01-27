@@ -1,0 +1,15 @@
+bwa_index_name: Homo_sapiens.GRCh38.dna.primary_assembly.fa
+bwa_index_dir: /gpfs/hpchome/a72094/rocket/annotations/GRCh38/bwa_index/
+chromosome_lengths: /gpfs/hpchome/a72094/rocket/annotations/GRCh38/chromosome_lengths.txt
+samples: [""]
+
+#QTL mapping
+conditions: ["CTCF"]
+n_batches: 250
+qtl_vcf: "/gpfs/hpchome/a72094/rocket/datasets/CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.final.vcf.gz"
+cis_window: 2000
+nominal_cis_window: 2000
+annot_type: ["cqn"]
+
+#Software paths
+picard_path: /gpfs/hpchome/a72094/software/jar/picard-2.17.0.jar
