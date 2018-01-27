@@ -42,7 +42,7 @@ rule permutation_run:
 	resources:
 		mem = 5000
 	shell:
-		"QTLtools cis --vcf {input.vcf} --bed {input.bed} --cov {input.covariates} --chunk {params.chunk} --out {output} --window {config[cis_window]} --permute 10000"
+		"QTLtools cis --vcf {input.vcf} --bed {input.bed} --cov {input.covariates} --chunk {params.chunk} --out {output} --window {config[cis_window]} --permute 10000 || touch {output}"
 
 
 #Merge all batches from QTLtools
@@ -78,7 +78,7 @@ rule nominal_run:
 	resources:
 		mem = 5000
 	shell:
-		"QTLtools cis --vcf {input.vcf} --bed {input.bed} --cov {input.covariates} --chunk {params.chunk} --out {output} --window {config[nominal_cis_window]} --nominal 1"
+		"QTLtools cis --vcf {input.vcf} --bed {input.bed} --cov {input.covariates} --chunk {params.chunk} --out {output} --window {config[nominal_cis_window]} --nominal 1 || touch {output}"
 
 #Merge all batches from QTLtools
 rule merge_nominal_batches:
