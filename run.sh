@@ -11,6 +11,11 @@ snakemake -np macrophages/out.txt --configfile config_macrophages.yaml
 snakemake --cluster scripts/snakemake_submit.py -p macrophages/out.txt --jobs 100 --configfile config_macrophages.yaml
 
 
+#Process the CTCF dataset
+#Map QTLs
+snakemake --cluster scripts/snakemake_submit_UT.py -np -s map_QTLs.snakefile processed/CTCF/out.txt --jobs 1200 --configfile configs/config_CTCF.yaml
+
+
 
 #Process PU.1 data
 #Convert bams to fastq files
