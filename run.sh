@@ -15,6 +15,8 @@ snakemake --cluster scripts/snakemake_submit.py -p macrophages/out.txt --jobs 10
 #Map QTLs
 snakemake --cluster scripts/snakemake_submit_UT.py -np -s map_QTLs.snakefile processed/CTCF/out.txt --jobs 1200 --configfile configs/config_CTCF.yaml
 
+#Identify failed output files
+snakemake --cluster scripts/snakemake_submit_UT.py -np -s map_QTLs.snakefile processed/CTCF/out.txt --jobs 600 --configfile configs/config_CTCF.yaml | grep "output: processed"
 
 
 #Process PU.1 data
