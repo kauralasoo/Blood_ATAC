@@ -7,8 +7,8 @@ samples: [NA06985_PU1,NA06986_PU1,NA06994_PU1,NA07037_PU1,NA07048_PU1,NA07051_PU
 conditions: ["PU1"]
 n_batches: 250
 qtl_vcf: "path_to_vcf"
-cis_window: 100000
-nominal_cis_window: 500000
+cis_window: 2000
+nominal_cis_window: 2000
 annot_type: ["cqn"]
 
 #Software paths
