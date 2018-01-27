@@ -8,7 +8,7 @@ conditions: ["CTCF"]
 n_batches: 250
 qtl_vcf: "/gpfs/hpchome/a72094/rocket/datasets/CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.final.vcf.gz"
 cis_window: 50000
-nominal_cis_window: 2000
+nominal_cis_window: 50000
 annot_type: ["cqn"]
 
 #Software paths
