@@ -43,6 +43,7 @@ sample_meta = readr::read_tsv("data/Waszak_2015/Waszak_2015_clean_metadata.txt")
   dplyr::filter(sample_id %in% colnames(count_matrix)) %>%
   dplyr::select(sample_id, genotype_id) %>%
   dplyr::left_join(kg_meta, by = "genotype_id") %>%
+  dplyr::filter(genotype_id %in% genotyped$V1) %>%
   as.data.frame()
 rownames(sample_meta) = sample_meta$sample_id
 

@@ -25,3 +25,6 @@ snakemake --cluster scripts/snakemake_submit_UT.py -np processed/PU1/out.txt -s 
 
 #Run the processing pipeline
 snakemake --cluster scripts/snakemake_submit_UT.py -np processed/PU1/out.txt -s ChIP_pipeline_SE.snakefile --configfile configs/config_PU1.yaml --jobs 5
+
+#Map QTLs
+snakemake --cluster scripts/snakemake_submit_UT.py -np -s map_QTLs.snakefile processed/PU1/out.txt --jobs 1200 --configfile configs/config_CTCF.yaml

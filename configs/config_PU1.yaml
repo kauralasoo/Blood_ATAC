@@ -6,9 +6,9 @@ samples: [NA06985_PU1,NA06986_PU1,NA06994_PU1,NA07037_PU1,NA07048_PU1,NA07051_PU
 #QTL mapping
 conditions: ["PU1"]
 n_batches: 250
-qtl_vcf: "path_to_vcf"
-cis_window: 2000
-nominal_cis_window: 2000
+qtl_vcf: "/gpfs/hpchome/a72094/rocket/datasets/PU.1/genotypes/vcf/GRCh38/Waszak_47_samples.merged.vcf.gz"
+cis_window: 50000
+nominal_cis_window: 50000
 annot_type: ["cqn"]
 
 #Software paths
