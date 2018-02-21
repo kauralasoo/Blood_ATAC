@@ -1,6 +1,9 @@
+#Run QTLtools PCA
+# QTLtools pca --bed CTCF.norm_prop.txt.gz --center --scale --out CTCF.pheno_pca
+# QTLtools pca --vcf /gpfs/hpchome/a72094/rocket/datasets/CTCF/genotypes/vcf/GRCh38/CTCF_51_samples.GRCh38.final.vcf.gz --center --scale --out CTCF.geno_pca
 
 #Import PCA results
-phenotype_pca = readr::read_delim("processed/CTCF/qtltools/input/cqn/CTCF.pca.txt.pca", delim = " ")
+phenotype_pca = readr::read_delim("processed/CTCF/qtltools/input/cqn/CTCF.pheno_pca.pca", delim = " ")
 genotype_pca = readr::read_delim("processed/CTCF/qtltools/input/cqn/CTCF.geno_pca.pca", delim = " ")
 
 #Filter genotype PCA to the same set of individuals
