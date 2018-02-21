@@ -121,18 +121,65 @@ rule remove_duplicates:
 		java -jar {config[picard_path]} MarkDuplicates I={input} O={output.bam} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=LENIENT METRICS_FILE={output.metrics}
 		"""
 
+# Produce peaks
+rule peaks:
+    input:
+        "processed/{dataset}/filtered/{sample}.no_duplicates.bam",
+    output:
+        narrowPeaks = protected("processed/{dataset}/peaks/{sample}.no_duplicates.narrowPeak"),
+        summits = protected("processed/{dataset}/peaks/{sample}.no_duplicates.summits.bed"),
+    resources:
+        mem = 10000,
+    threads:
+        1,
+    params:
+        tmpOut = "/tmp/" + uuid.uuid4().hex + "/",
+        tmpIn = "/tmp/" + uuid.uuid4().hex,
+    	xls = "{sample}_peaks.xls",
+    	tempPeaks = "{sample}_peaks.narrowPeak",
+    	tempSummits = "{sample}_summits.bed",
+    shell:
+    	"""
+        module load MACS-2.1.0 &&
+        mkdir {params.tmpOut} &&
+        cp {input} {params.tmpIn} &&
+        macs2 callpeak -t {params.tmpIn} -q 0.01 -n {wildcards.sample} --outdir {params.tmpOut} -f BAM &&
+    	rm {params.tmpOut}{params.xls} &&
+    	cp {params.tmpOut}{params.tempPeaks} {output.narrowPeaks} &&
+        cp {params.tmpOut}{params.tempSummits} {output.summits} &&
+        rm {params.tmpOut}{params.tempPeaks} &&
+        rm {params.tmpOut}{params.tempSummits} &&
+        rm -r {params.tmpOut} &&
+        rm {params.tmpIn}
+        """
+
+rule feat_cnt:
+    input:
+        bam = "processed/{dataset}/filtered/{sample}.no_duplicates.bam",
+    output:
+        counts = "processed/{dataset}/counts/{sample}.no_duplicates.counts.txt",
+        summary = "processed/{dataset}/counts/{sample}.no_duplicates.counts.txt.summary",
+    threads:
+        6,
+    resources:
+        mem = 20000,
+    shell:
+        """
+		featureCounts -p -C -D 5000 -d 50 -a {config[PU1_peaks_gtf]} -o {output.counts} {input.bam}
+        """
 
 #Make sure that all final output files get created
 rule make_all:
 	input:
 		#expand("processed/{{dataset}}/aligned/{sample}.bam", sample=config["samples"]),
 		expand("processed/{{dataset}}/sorted_bam/{sample}.sortedByCoords.bam.bai", sample=config["samples"]),
-		expand("processed/{{dataset}}/filtered/{sample}.no_duplicates.bam", sample=config["samples"])
+		#expand("processed/{{dataset}}/filtered/{sample}.no_duplicates.bam", sample=config["samples"]),
+		expand("processed/{{dataset}}/peaks/{sample}.no_duplicates.narrowPeak", sample=config["samples"]),
+		expand("processed/{{dataset}}/counts/{sample}.no_duplicates.counts.txt", sample=config["samples"]),
 	output:
-		"processed/{dataset}/out.txt"
+		"processed/{dataset}/out.txt",
 	resources:
-		mem = 100
-	threads: 1
+		mem = 100,
+	threads: 1,
 	shell:
 		"echo 'Done' > {output}"
-
