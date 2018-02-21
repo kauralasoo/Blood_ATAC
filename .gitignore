@@ -8,3 +8,5 @@ munge/.DS_Store
 *.Rproj*
 results
 processed
+.Rproj.user
+.Rhistory
